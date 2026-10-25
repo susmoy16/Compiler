@@ -1,0 +1,89 @@
+#include <iostream>   // cout এবং basic input/output-এর জন্য
+#include <fstream>    // file থেকে পড়া এবং file-এ লেখার জন্য
+
+using namespace std;
+
+int main() {
+
+    ifstream input("input.txt");     // input.txt file থেকে data পড়বে
+    ofstream output("output.txt");   // output.txt file-এ data লিখবে
+
+    char ch, next;       // ch = current character, next = পরের character
+
+    bool multiComment = false;   // আমরা multi-line comment-এর ভিতরে আছি কিনা track করবে
+                                 // false = comment-এর ভিতরে নেই
+                                 // true = comment-এর ভিতরে আছি
+
+
+    while (input.get(ch)) {   // input file থেকে এক character করে পড়বে
+
+
+        if (multiComment) {   // যদি বর্তমানে multi-line comment-এর ভিতরে থাকি
+
+            if (ch == '*') {  // '*' পাওয়া গেলে পরের character check করবে
+
+                input.get(next);   // পরের character next-এর মধ্যে রাখবে
+
+                if (next == '/') {   // যদি */ পাওয়া যায়
+
+                    multiComment = false;   // multi-line comment শেষ
+                }
+
+                else {
+                    input.putback(next);   // '/' না হলে next character আবার input-এ ফেরত দেবে
+                }
+            }
+        }
+
+
+        else if (ch == '/') {   // comment শুরু হতে পারে, কারণ '/' পাওয়া গেছে
+
+            input.get(next);     // '/' এর পরের character পড়বে
+
+
+            // ================ SINGLE LINE COMMENT ================
+
+            if (next == '/') {   // যদি // পাওয়া যায়, তাহলে single-line comment
+
+                while (input.get(ch) && ch != '\n');
+                // comment-এর সব character skip করবে
+                // newline পাওয়া পর্যন্ত loop চলবে
+
+                output << '\n';   // comment-এর জায়গায় নতুন line রাখবে
+            }
+
+
+            // ================ MULTI-LINE COMMENT ================
+
+            else if (next == '*') {   // যদি /* পাওয়া যায়
+
+                multiComment = true;   // multi-line comment শুরু হয়েছে
+            }
+
+
+            // ================ NORMAL SLASH ================
+
+            else {   // / এর পরে / অথবা * না থাকলে এটা normal slash
+
+                output << ch;       // normal '/' output file-এ লিখবে
+
+                input.putback(next);   // next character আবার input-এ ফেরত দেবে
+            }
+        }
+
+
+        else {   // comment না হলে
+
+            output << ch;   // character-টি সরাসরি output file-এ লিখবে
+        }
+    }
+
+
+    input.close();    // input file বন্ধ করবে
+    output.close();   // output file বন্ধ করবে
+
+    cout << "Comments removed successfully!" << endl;
+    // screen-এ success message দেখাবে
+
+    return 0;   // program শেষ
+}

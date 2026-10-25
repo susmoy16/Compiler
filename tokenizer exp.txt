@@ -1,0 +1,71 @@
+#include <bits/stdc++.h>   // প্রয়োজনীয় সব C++ library include করা হয়েছে
+using namespace std;        // std:: না লিখে সরাসরি string, cout ইত্যাদি ব্যবহার করার জন্য
+
+int main() {
+
+    string s = "int a = b + 25;";   // যে source code-কে token-এ ভাগ করা হবে
+
+    string token[20];   // তৈরি হওয়া token গুলো রাখার জন্য array
+    int count = 0;      // মোট কয়টি token পাওয়া গেছে তা রাখবে
+    string temp = "";   // বর্তমানে তৈরি হওয়া word/token অস্থায়ীভাবে রাখবে
+
+
+    // ================= TOKENIZATION =================
+
+    for (int i = 0; i < s.length(); i++) {   // string-এর প্রতিটি character একে একে পড়বে
+
+        if (isalnum(s[i])) {   // character টি letter অথবা digit কিনা check করবে
+
+            temp += s[i];      // letter/digit হলে temp-এর সাথে যোগ করবে
+        }
+
+        else {   // character টি letter/digit না হলে এই অংশে আসবে
+
+            if (temp != "") {   // temp-এর মধ্যে কোনো word জমা আছে কিনা check করবে
+
+                token[count] = temp;   // temp-এর word-কে token array-তে রাখবে
+                count++;               // token সংখ্যা ১ বাড়াবে
+                temp = "";             // পরবর্তী word-এর জন্য temp খালি করবে
+            }
+
+            if (s[i] != ' ') {   // character টি space না হলে
+
+                token[count] = s[i];   // =, +, ; ইত্যাদি আলাদা token হিসেবে রাখবে
+                count++;               // token সংখ্যা ১ বাড়াবে
+            }
+        }
+    }
+
+
+    // ================= CLASSIFICATION =================
+
+    for (int i = 0; i < count; i++) {   // প্রতিটি token একে একে check করবে
+
+        cout << token[i] << " : ";   // প্রথমে token-টি print করবে
+
+
+        if (token[i] == "int")
+            cout << "Keyword";       // token "int" হলে Keyword
+
+
+        else if (isdigit(token[i][0]))
+            cout << "Number";        // প্রথম character digit হলে Number
+
+
+        else if (token[i] == "=" || token[i] == "+" ||
+                 token[i] == "-" || token[i] == "*")
+            cout << "Operator";      // =, +, -, * হলে Operator
+
+
+        else if (token[i] == ";")
+            cout << "Separator";     // ; হলে Separator
+
+
+        else
+            cout << "Identifier";    // উপরের কোনো condition না মিললে Identifier
+
+        cout << endl;                // পরবর্তী output নতুন line-এ দেখাবে
+    }
+
+    return 0;   // program successfully শেষ হয়েছে
+}

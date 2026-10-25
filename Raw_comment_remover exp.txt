@@ -1,0 +1,72 @@
+
+#include <bits/stdc++.h>  // C++ এর প্রয়োজনীয় সব লাইব্রেরি যুক্ত করে
+using namespace std;     // std:: না লিখে সরাসরি cin, cout, string ব্যবহার করা যায়
+
+int main() {
+    string s, result = "";  // s-এ ইনপুট লাইন রাখবে, result-এ কমেন্ট ছাড়া কোড জমা হবে
+
+    bool multiComment = false;  // বর্তমানে multi-line comment-এর ভিতরে আছি কি না
+    bool singleComment = false; // single-line comment-এর অবস্থা সংরক্ষণ করে
+
+    cout << "Enter source code (use # to finish):" << endl;
+    // ব্যবহারকারীকে সোর্স কোড ইনপুট দিতে বলে
+
+    while (getline(cin, s) && s != "#") {
+        // একবারে একটি সম্পূর্ণ লাইন ইনপুট নেয়
+        // ব্যবহারকারী # লিখলে ইনপুট নেওয়া বন্ধ হয়
+
+        for (int i = 0; i < s.length(); i++) {
+            // বর্তমান লাইনের প্রতিটি ক্যারেক্টার পরীক্ষা করে
+
+            if (multiComment) {
+                // যদি multi-line comment-এর ভিতরে থাকি
+
+                if (s[i] == '*' && i + 1 < s.length() && s[i + 1] == '/') {
+                    // পরীক্ষা করে পরপর */ আছে কি না
+
+                    multiComment = false;  // multi-line comment শেষ হয়েছে
+                    i++;                   // / ক্যারেক্টারটি এড়িয়ে যায়
+                }
+            }
+
+            else if (singleComment) {
+                // যদি single-line comment-এর ভিতরে থাকি
+
+                break;  // বর্তমান লাইনের বাকি অংশ পরীক্ষা করা বন্ধ করে
+            }
+
+            else if (s[i] == '/' && i + 1 < s.length() && s[i + 1] == '/') {
+                // পরীক্ষা করে // আছে কি না
+
+                singleComment = true;  // single-line comment শুরু হয়েছে
+                break;                 // লাইনের বাকি অংশ বাদ দেয়
+            }
+
+            else if (s[i] == '/' && i + 1 < s.length() && s[i + 1] == '*') {
+                // পরীক্ষা করে /* আছে কি না
+
+                multiComment = true;  // multi-line comment শুরু হয়েছে
+                i++;                  // * ক্যারেক্টারটি এড়িয়ে যায়
+            }
+
+            else {
+                result += s[i];  // সাধারণ ক্যারেক্টার result-এর মধ্যে যোগ করে
+            }
+        }
+
+        if (!multiComment) {
+            // যদি multi-line comment-এর ভিতরে না থাকি
+
+            singleComment = false;  // single-line comment-এর অবস্থা রিসেট করে
+        }
+
+        result += '\n';  // পরবর্তী লাইনের জন্য নতুন লাইন যোগ করে
+    }
+
+    cout << "\nCode without comments:\n";
+    // কমেন্ট ছাড়া কোড দেখানোর শিরোনাম প্রিন্ট করে
+
+    cout << result;  // কমেন্ট ছাড়া সম্পূর্ণ কোড প্রিন্ট করে
+
+    return 0;  // প্রোগ্রাম শেষ করে
+}
